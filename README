@@ -243,3 +243,31 @@ Following these papers consumer applications of this technology began to be more
 ---
 
 ## 9.0 Repository Guide
+
+#### Set Up
+1. Create a new conda environment and install all packages in requirements.txt
+```
+conda create -n mie1517_project python=3.11
+conda activate mie1517_project
+pip install -r requirements.txt
+```
+2. Download this checkpoints folder and place it in the "ml" folder.
+
+#### Testing
+1. Run the following scripts from the terminal to generate the feature data and indices for the validation dataset
+```bash
+python ml/training/extract_lora_retrieval_tokens.py
+python ml/preprocessing/build_projected_faiss_index.py
+```
+2. Run the following script from the terminal to evaluate the pipeline
+```
+python scripts/evaluate_pipeline.py --metadata_csv ml/data/version2/validation_metadata.csv
+```
+All results will be stored in the ml/results folder
+
+#### Demo App
+1. Run the following in the terminal
+```
+python run.py
+```
+2. Go to the link http://127.0.0.1:5000
