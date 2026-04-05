@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Style Matcher</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <h1 class="title">Style Matcher</h1>
+        <p class="subtitle">
+          Upload a photo to find similar items.
+        </p>
+
+        <form id="upload-form" class="upload-form">
+          <label for="image-input" class="file-label">Choose a Photo</label>
+          <input id="image-input" name="image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required />
+          <button id="submit-btn" type="submit">Find Similar Item</button>
+        </form>
+
+        <p id="status" class="status"></p>
+
+        <div id="loading" class="loading hidden" aria-live="polite" aria-busy="true">
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Searching…</span>
+        </div>
+
+        <div id="results" class="results hidden">
+          <div>
+            <h2>Uploaded Image</h2>
+            <img id="uploaded-preview" alt="Uploaded preview" />
+          </div>
+          <div>
+            <h2>Matched Item</h2>
+            <img id="matched-image" alt="Matched clothing result" />
+          </div>
+        </div>
+
+        <p id="product-name" class="product-name hidden"></p>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

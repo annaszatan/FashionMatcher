@@ -1,0 +1,33 @@
+experiment_name: "G_finetuning_plus_transfer-learning_ep50"
+
+paths:
+  #input_features_dir: "ml/features/G_finetuning_plus_transfer-learning"
+  input_features_dir: "ml/features/american_eagle_gallery"
+  # Metrics tag (optional); distinguishes from vanilla frozen-DINO features
+  input_feature_backbone: "dinov2_lora_cls_patch"
+  results_dir: "results"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+
+model:
+  type: "transformer"
+  device: "cuda"
+  output_dim: 256
+  d_model: 256
+  num_layers: 2
+  num_heads: 8
+  ff_hidden_dim: 512
+  dropout: 0.1
+  drop_path: 0.05
+  use_cls_token: true
+
+training:
+  train_split: "gallery"
+  loss_type: "supcon"
+  temperature: 0.1
+  batch_size: 128
+  num_workers: 2
+  lr: 1e-4
+  weight_decay: 0.01
+  epochs: 50
+  val_every: 5

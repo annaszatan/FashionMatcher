@@ -1,0 +1,13 @@
+{
+  "num_queries": 4703,
+  "missing_images": 0,
+  "invalid_boxes": 0,
+  "match_on": "item_id",
+  "crop_fusion": "max",
+  "precision@1": 0.05847331490537955,
+  "precision@5": 0.03159685307250693,
+  "precision@10": 0.01760578354241964,
+  "recall@1": 0.05847331490537955,
+  "recall@5": 0.15798426536253454,
+  "recall@10": 0.1760578354241973
+}

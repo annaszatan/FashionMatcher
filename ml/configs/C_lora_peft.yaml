@@ -1,0 +1,37 @@
+# Transfer Learning C (LoRA): Real LoRA adapters on backbone + projection head
+# Backbone frozen except LoRA params; head trainable.
+experiment_name: "C_lora_peft"
+
+paths:
+  metadata: "data/version2/metadata.csv"
+  image_root: "data/validation/image"
+  features_dir: "features/C_lora_peft"
+  results_dir: "results"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+
+model:
+  backbone: "dinov2_vitb14"
+  embedding_dim: 256
+  head_type: "linear"
+  device: "cuda"
+  # LoRA (PEFT)
+  lora_r: 8
+  lora_alpha: 16.0
+  lora_dropout: 0.0
+  lora_target_modules: ["attn.qkv", "attn.proj", "mlp.fc1", "mlp.fc2"]
+  train_projection_head: true
+
+embedding:
+  batch_size: 64
+  num_workers: 4
+
+training:
+  strategy: "lora_peft"
+  train_split: "gallery"
+  loss_type: "supcon"
+  temperature: 0.1
+  lr: 1e-4
+  weight_decay: 0.01
+  epochs: 20
+  val_every: 2
