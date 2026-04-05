@@ -1,1 +1,148 @@
-# MIE1517 Project: FashionMatcher
+# MIE1517: Fashion Matcher
+
+### **Authors**
+
+John Fredy Reina Gonzalez, Minjeong Kim, Dejan Plavsic, Anna Szatan
+
+## 1.0 Introduction
+Finding similar clothing items can be difficult, and scrolling through Google to find items based on a description is time consuming. As such, we wanted to create a tool that would expedite the process.
+
+This project develops an image-based clothing retrieval system using the DeepFashion2 dataset. Given a query clothing item, the system retrieves visually similar items from a gallery. The tool has two components: a clothing localizer and a clothing retriever. For the localizer, we finetuned a pretrained YOLO model and utilized the generated bounding boxes to crop the images, which were then sent to the retrieval model. For the retrieval model, we use deep feature embeddings extracted from pretrained model (DINOv2), combined with metric learning (Triplet Loss, InfoNCE and Supervised Contrastive Loss) and FAISS for efficient similarity search.
+
+The model performance is evaluated using Recall@K metrics (K = 1, 5, 10), which measure the proportion of queries for which the correct item (same pair_id) is retrieved within the top-K results.
+
+This report describes the process for developing this tool, including different retrieval model variations, the dataset and preprocessing performed, as well as evaluation metrics.
+
+The sections of this report include:
+
+- [1.0 Introduction](#10-introduction)
+- [2.0 Data](#20-data)
+- [3.0 Model Architecture](#30-model-architecture)
+- [4.0 Results](#40-results)
+- [5.0 New Data](#50-new-data)
+- [6.0 Related Work](#60-related-work)
+- [7.0 Discussion](#70-discussion)
+- [8.0 References](#80-references)
+- [9.0 Repository Guide](#90-repository-guide)
+
+---
+
+## 2.0 Data
+
+The main data for this project was taken from the DeepFashion2 dataset. The following tables contain in-depth information regarding their structure.
+
+*Table 1. DeepFashion2 Dataset Overview*
+
+| Property | Details |
+|------|-------------|
+| Name | DeepFashion2Dataset |
+| Source | [DeepFashion2](https://github.com/switchablenorms/DeepFashion2) |
+| Total Images | 491k+ consumer and shop images |
+| Clothing Items | 801k+ annotated clothing instances | 
+| Annotations | Bounding boxes, masks, landmarks, category, style, pair_id |
+| Format | Images + annotation files used to build metadata.csv and ClothingLocalizationDataset |
+| Task | Image-based clothing retrieval and fine-grained matching |
+
+For training and evaluation, the Train and Validation datasets from DeepFashion2 was used. The final list of samples was filtered such that only trousers and shirts (categories 1 and 8) were evaluated. Moreover, only items with a valid style, category, and pair_id marker were retained. A key requirement is ensuring overlap between query and gallery pair_ids, without this, retrieval evaluation results in zero recall. The following table highlights the breakdown of the data stored.
+
+*Table 2. DeepFashion2 Dataset Summary*
+| Split | Query Size | Gallery Size | Overlap Pairs |
+| ----- | ---------- | ------------ | ------------- |
+| Train | 28,724 | 96,572 | 7,590 | 
+| Validation | 5,118 | 14,826 | 1,207 |
+
+This dataset presents several challenges for retrieval tasks. First, there is significant variation in pose, lighting conditions, and background, which makes it difficult for the model to learn consistent visual representations. Second, many images exhibit occlusion and partial visibility of clothing items, further complicating feature extraction and similarity matching.
+A critical requirement for evaluation is ensuring that the query and gallery sets share common pair_id labels. Since retrieval performance is measured based on matching items with the same pair_id or on matching to the pair_id, the absence of overlap between these sets would result in zero recall, regardless of model quality.
+
+---
+
+## 3.0 Model Architecture
+
+### 3.1 Overview
+The model contains two components: clothing detection, and retrieval. The diagram below provides an overview of the pipeline:
+
+![Pipeline overview](readme_images/full_pipeline_architecture.png)
+
+The clothing detection component of the system contains a finetuned YOLO model that will produce a bounding box around the target clothes, then use the boxes to produce crops that can be used by the retrieval model.
+
+The retrieval model takes the image and creates an embedding from pretrained DINOv2 features. A transformer block will then take in the features and project them. The projected embeddings will be compared to a FAISS index of projected gallery embeddings using cosine similarity. The top k results will be returned to the user.
+
+
+### 3.2 Localization Component
+The localization model was developed predominantly for ease of tool operability such that a user can simply upload an image and the tool can identify clothing without the need for prior cropping. As such, we focused on finetuning an existing model. Given the intended potential commercial use, it was important that our crops could be found with great speed and relative accuracy. For this reason we chose YOLO to form the backbone, then finetuned manually with different hyperparameters to achieve higher precision.
+
+### 3.3 Retrieval Component
+The retrieval model is the heart of this tool, providing similar results for given image crop sourced from a gallery of images stored locally. For this reason, significant work was done to determine the best architecture to carry out this task.
+
+For the retrieval model, we evaluated different feature extractors for image embedding generation, including ResNet18 as a CNN baseline (supervised learning) and DINOv2 as a Vision Transformer (self-supervised). The results show that DINOv2 significantly outperforms the ResNet baseline due to its ability to capture richer semantic and structural features.
+
+To further improve performance, we applied LoRA (Low-Rank Adaptation), a parameter-efficient fine-tuning method that adapts the attention layers of DINOv2 to the target dataset. This approach achieves the best retrieval performance while maintaining low computational cost.
+
+
+---
+
+## 4.0 Results
+
+### 4.1 Localization Component
+
+#### 4.1.1 Quantitative
+
+#### 4.1.2 Qualitative
+
+### 4.2 Retrieval Component
+
+#### 4.2.1 Qualitative
+
+#### 4.2.2 Quantitative
+
+#### 4.2.3 Additional Testing
+
+### 4.3 Full Pipeline
+
+#### 4.3.1 Qualitative
+
+#### 4.3.2 Quantitative
+
+---
+
+## 5.0 New Data
+To demonstrate the viability of this product for an everyday user, we developed a simple user interface that would allow for individuals to upload an image and receive a similar item returned based on a small selection of items scraped from American Eagle. In the example below, we can see that a similar "off-the-shoulder" style is returned in a slightly different colour.
+
+![Demo Example2](readme_images/demo_example2.png)
+
+This next example is an exact match for the item from American eagle, with a very high similarity score.
+
+![Demo Example](readme_images/demo_example.png)
+
+While this example works relatively well, there are some cases were the model cannot appropriately determine a match. While the fit of the shirt may be appropriate, the colour is off.
+
+![Demo Example Bad](readme_images/demo_example_bad.png)
+
+---
+
+## 6.0 Related Work
+
+Over the years this problem has been attempted numerous times, with varying levels of success. Early work did not involve deep learning, and instead used standard computer vision with colour matching and algorithms such as SIFT. With progress in deep learning, better models for image similarity became possible. An early paper was from the CVP (computer vision foundation) in 2014 titled “Learning Fine-grained Image Similarity with Deep Ranking” [1]. This paper demonstrated a deep learning image similarity architecture was able to outperform the period computer vision approaches using hand-crafted visual features. 
+
+In 2014 IEEE published a paper titled “On visual similarity based interactive product recommendation for online shopping” [2], which demonstrated similar product recommendations based on image similarity. This demonstrated the application for general product similarity search, however not specifically for fashion. In 2015 the computer vision foundation published another paper titled “Where to Buy It: Matching Street Clothing Photos in Online Shops” [3]. This paper implemented image similarity search directly to the context of fashion, and used ‘street to shop’ comparison. This is particularly challenging since the images found from online retailers have substantially different lighting and poses from street images, which is discussed in the paper. 
+
+Following these papers consumer applications of this technology began to be more prevalent. In 2017 there was the release of Bixby Vision (Samsung), Google Lens, and Pinterest Lens. These were all models tailored towards general shopping or item recommendations in particular, rather than specifically clothing however. 
+
+
+---
+
+## 7.0 Discussion
+
+---
+
+## 8.0 References
+
+[1] J. Wang et al., “Learning Fine-grained Image Similarity with Deep Ranking,” arXiv:1404.4661 [cs], Apr. 2014, Available: https://arxiv.org/abs/1404.4661
+
+[2] J.-H. Hsiao and L.-J. Li, “On visual similarity based interactive product recommendation for online shopping,” IEEE Xplore, Oct. 01, 2014. https://ieeexplore.ieee.org/abstract/document/7025614 (accessed Apr. 05, 2026).
+
+[3] M. H. Kiapour, X. Han, S. Lazebnik, A. C. Berg, and T. L. Berg, “Where to Buy It: Matching Street Clothing Photos in Online Shops,” 2015 IEEE International Conference on Computer Vision (ICCV), Dec. 2015, doi: https://doi.org/10.1109/iccv.2015.382.
+
+---
+
+## 9.0 Repository Guide

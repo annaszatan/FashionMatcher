@@ -15,7 +15,7 @@ FEATURE_DIR = os.path.join(PROJECT_ROOT, "ml", "features")
 INDEX_DIR = os.path.join(PROJECT_ROOT, "ml", "indices")
 DEMO_INDEX_DIR = os.path.join(INDEX_DIR, "G_finetuning_transformer_demo")
 VALIDATION_INDEX_DIR = os.path.join(INDEX_DIR, "G_finetuning_plus_transfer-learning_ep50_validation")
-DEMO_GALLERY_FEATURE_DIR = os.path.join(FEATURE_DIR, "american_eagle_gallery")
+DEMO_GALLERY_FEATURE_DIR = os.path.join(FEATURE_DIR, "demo_data/american_eagle_gallery")
 VALIDATION_FEATURE_DIR = os.path.join(FEATURE_DIR, "G_finetuning_plus_transfer-learning_projected")
 
 class FashionRetrievalPipeline:
