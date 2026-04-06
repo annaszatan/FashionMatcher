@@ -183,7 +183,7 @@ The consistent increase in Recall@K indicates that the model often retrieves cor
 We achieve the best performance by evaluating multiple training scenarios and configurations. The most relevant experiments are summarized in Figures 4–6, which present the Recall@10 results for Triplet Loss, InfoNCE Loss, and Supervised Contrastive Loss (SupCon), respectively.
 
 <p align="center">
-	<img src="readme_images/localizer_crop_examples.png" alt="Localizer Boxes" width="600">
+	<img src="readme_images/dino_finetuning.png" alt="Finetuning Results" width="600">
 </p>
 <p align="center"><em>Figure 5. (1) Supcon Loss, (2) InfoNCE Loss, (3) Triplet Loss.</em></p>
 
