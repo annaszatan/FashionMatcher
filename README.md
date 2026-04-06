@@ -328,7 +328,7 @@ conda create -n mie1517_project python=3.11
 conda activate mie1517_project
 pip install -r requirements.txt
 ```
-2. Download this checkpoints folder and place it in the "ml" folder.
+2. Download this [checkpoints](https://drive.google.com/drive/folders/1dOTHzSSEi7F4-OIJes1TmBAYYZm7U0xf?usp=sharing) folder and place it in the "ml" folder.
 
 #### Testing
 1. Run the following scripts from the terminal to generate the feature data and indices for the validation dataset
