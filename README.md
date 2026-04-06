@@ -46,6 +46,7 @@ The main data for this project was taken from the DeepFashion2 dataset. The foll
 For training and evaluation, the Train and Validation datasets from DeepFashion2 was used. The final list of samples was filtered such that only trousers and shirts (categories 1 and 8) were evaluated. Moreover, only items with a valid style, category, and pair_id marker were retained. A key requirement is ensuring overlap between query and gallery pair_ids, without this, retrieval evaluation results in zero recall. The following table highlights the breakdown of the data stored.
 
 *Table 2. DeepFashion2 Dataset Summary*
+
 | Split | Query Size | Gallery Size | Overlap Pairs |
 | ----- | ---------- | ------------ | ------------- |
 | Train | 28,724 | 96,572 | 7,590 | 
@@ -61,7 +62,10 @@ A critical requirement for evaluation is ensuring that the query and gallery set
 ### 3.1 Overview
 The model contains two components: clothing detection, and retrieval. The diagram below provides an overview of the pipeline:
 
-<figure style="text-align: center;"> <img src="readme_images/full_pipeline_architecture.png" alt="Full Pipeline" width="1000"> <figcaption>Figure 1. Full Pipeline Architecture.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/full_pipeline_architecture.png" alt="Full Pipeline" width="1000">
+</p>
+<p align="center"><em>Figure 1. Full Pipeline Architecture.</em></p>
 
 The clothing detection component of the system contains a finetuned YOLO model that will produce a bounding box around the target clothes, then use the boxes to produce crops that can be used by the retrieval model.
 
@@ -95,6 +99,7 @@ A trial of 26 different manually tuned configurations were attempted adjusting f
 Pytorch estimated optimal parameters for the model were used to get an initial baseline for performance. Each individual hyperparameter was accessed to find the approximate optimal value when only the given hyperparameter is modified. The individually optimized parameters were then combined to attempt to obtain a further optimized set of hyperparameters. This logic is process is not definitive, and often modifying one hyperparameter will adjust the optimal value for a different hyperparameter. Hence the hyperparameters were then further adjusted to attempt to further the hyperparameters. It should be noted that this process very likely did not find the optimal hyperparameters, but this is a quick method for finding a ‘reasonable’ set of hyperparameters with manual tuning. My method also made the assumption that the method which performed best at 5 epochs would also perform best at a greater number of epochs, however this may not be true. Attached below is a table summarizing the different inputs, and their respective outcomes. 
 
 *Table 3. Localization Model Validation Data Hypertuning*
+
 | Test                                           | Number of Epochs | Batch Size | Optimizer | LR Start | LR Decay Type | Ratio Learning Rate Final | Momentum | mAP50    | mAP50-95 |
 |------------------------------------------------|------------------|------------|-----------|----------|----------------|----------------------------|----------|----------|-----------|
 | Pytorch Default Parameters                     | 5                | 32         | AdamW     | 0.002    | Linear         | 0.01                       | 0.9      | 0.9407918 | 0.7275296 |
@@ -106,27 +111,31 @@ It can be seen that the pytorch optimized parameters provided a well optimized i
 
 The training curve for the best performing set of hyperparameters achieved for the four metrics asses can be seen below followed by a confusion matrix demonstrating the efficacy of the model.  
 
-<table>
-	<tr>
-		<td><img src="readme_images/localizer_precision.png" alt="Localizer Precision" width="100%"></td>
-		<td><img src="readme_images/localizer_recall.png" alt="Localizer Recall" width="100%"></td>
-	</tr>
-	<tr>
-		<td><img src="readme_images/localizer_map50.png" alt="Localizer MAP50" width="100%"></td>
-		<td><img src="readme_images/localizer_map5095.png" alt="Localizer MAP50-95" width="100%"></td>
-	</tr>
-    <figcaption>Figure 2. Localizer Training Curves.</figcaption>
-</table>
+<p align="center">
+  <img src="readme_images/localizer_precision.png" alt="Localizer Precision" width="49%">
+  <img src="readme_images/localizer_recall.png" alt="Localizer Recall" width="49%">
+</p>
+<p align="center">
+  <img src="readme_images/localizer_map50.png" alt="Localizer MAP50" width="49%">
+  <img src="readme_images/localizer_map5095.png" alt="Localizer MAP50-95" width="49%">
+</p>
+<p align="center"><em>Figure 2. Localizer Training Curves.</em></p>
 
 The model was also tested for over-fitting of the hyperparameters, with the testing dataset having marginally (0.1%) better performance than the validation dataset by chance. This hence proved that overfitting due to hyperparameter tuning had not occurred. With only 27 hyperparameter tuning trials on this large dataset, this form of overfitting was unlikely. 
 
-<figure style="text-align: center;"> <img src="readme_images/localizer_normalized_confusion_matrix.png" alt="Localizer CM" width="600"> <figcaption>Figure 3. Confusion Matrix for Best Performing Model.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/localizer_confusion_matrix_normalized.png" alt="Localizer CM" width="600">
+</p>
+<p align="center"><em>Figure 3. Confusion Matrix for Best Performing Model.</em></p>
 
 
 #### 4.1.2 Qualitative
 The localization model’s effectiveness at generating appropriate bounding boxes can be seen in the four images attached. As seen from the confusion matrix the model has an acceptable successful localization rate. Some of the errors experienced from the model can be seen in the attached images. In image “000001” the model appears to fail to identify the shirt on the woman's body, while the bounding box on the pants is very well defined. Another point of criticism is that in image “000000” the bounds box for the pants appears to extend past the pants noticeable, possibly creating confusion further in the pipeline due to the distinct shirt. 
 
-<figure style="text-align: center;"> <img src="readme_images/localizer_crop_examples.png" alt="Localizer Boxes" width="600"> <figcaption>Figure 4. Localizer Bounding Boxes.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/localizer_crop_examples.png" alt="Localizer Boxes" width="600">
+</p>
+<p align="center"><em>Figure 4. Localizer Bounding Boxes.</em></p>
 
 ### 4.2 Retrieval Component
 This section provides an overview of the results from training and testing the retrieval portion of the FashionMatcher tool.
@@ -147,13 +156,19 @@ The figure shows that the model successfully retrieves visually similar clothing
 However, some variations appear in lower-ranked results (Top 4–Top 5), where differences in style, lighting, or pose are more noticeable. This suggests that while the model captures global appearance effectively, it may struggle with fine-grained distinctions or variations in viewpoint.
 Overall, the qualitative results align with the quantitative performance, demonstrating that the model is capable of retrieving semantically similar items, although ranking accuracy can still be improved for more challenging cases.
 
-<figure style="text-align: center;"> <img src="readme_images/retrieval_model_example.png" alt="Retrieval Example" width="600"> <figcaption>Figure 4. Example Queries and Top Results from Retrieval Model.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/retrieval_model_example.png" alt="Retrieval Example" width="600">
+</p>
+<p align="center"><em>Figure 4. Example Queries and Top Results from Retrieval Model.</em></p>
 
 ### 4.3 Full Pipeline
 
 #### 4.3.1 Quantitative
 
-<figure style="text-align: center;"> <img src="readme_images/full_pipeline_results.png" alt="Full Pipeline Results" width="600"> <figcaption>Figure 5. Full Pipeline Results.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/full_pipeline_results.png" alt="Full Pipeline Results" width="600">
+</p>
+<p align="center"><em>Figure 5. Full Pipeline Results.</em></p>
 
 To evaluate the retrieval performance, the original training dataset was split into two subsets: Gallery images (shop-side clothing images) and Query images (consumer-side images where clothing is worn). The model was trained exclusively on the Gallery set and evaluated using the Query set to simulate a realistic retrieval scenario.
 
@@ -178,14 +193,21 @@ Additionally, the steady increase in Recall as K increases suggests that relevan
 
 #### 4.3.2 Qualitative
 **Success Case**
-<figure style="text-align: center;"> <img src="readme_images/full_pipeline_good.png" alt="Good Pipeline Example" width="600"> <figcaption>Figure 6. Good Example from Pipeline.</figcaption> </figure>
+
+<p align="center">
+	<img src="readme_images/full_pipeline_good.png" alt="Good Pipeline Example" width="600">
+</p>
+<p align="center"><em>Figure 6. Good Example from Pipeline.</em></p>
 
 Figure 6 presents qualitative results of the full pipeline, showing the Top-K retrieved items for success cases.
 
 In the success cases, the model demonstrates a strong ability to capture distinctive visual features. For example, it successfully identifies subtle details such as the black stripe on the collar of a polo shirt, which plays an important role in distinguishing similar items. In addition, the model performs well in recognizing graphic elements and characters, retrieving visually consistent items when the query contains clear and identifiable prints (e.g., character-based designs). These results indicate that the model effectively learns discriminative features that are robust to variations in pose and background.
 
 **Failure Case**
-<figure style="text-align: center;"> <img src="readme_images/full_pipeline_bad.png" alt="Failure Pipeline Example" width="600"> <figcaption>Figure 7. Failure Example from Pipeline.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/full_pipeline_bad.png" alt="Failure Pipeline Example" width="600">
+</p>
+<p align="center"><em>Figure 7. Failure Example from Pipeline.</em></p>
 
 Figure 7 presents qualitative results of the full pipeline, showing the Top-K retrieved items for failure cases. The failure cases reveal two main limitations:
 
@@ -203,15 +225,24 @@ Overall, the qualitative results show that the model performs well when clear an
 ## 5.0 New Data
 To demonstrate the viability of this product for an everyday user, we developed a simple user interface that would allow for individuals to upload an image and receive a similar item returned based on a small selection of items scraped from American Eagle. In the example below, we can see that a similar "off-the-shoulder" style is returned in a slightly different colour.
 
-<figure style="text-align: center;"> <img src="readme_images/demo_example2.png" alt="Demo Example 1" width="600"> <figcaption>Figure 8. Example new data image with good performance.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/demo_example2.png" alt="Demo Example 1" width="600">
+</p>
+<p align="center"><em>Figure 8. Example new data image with good performance.</em></p>
 
 This next example is an exact match for the item from American eagle, with a very high similarity score.
 
-<figure style="text-align: center;"> <img src="readme_images/demo_example.png" alt="Demo Example 2" width="600"> <figcaption>Figure 9. Example new data image with perfect performance.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/demo_example.png" alt="Demo Example 2" width="600">
+</p>
+<p align="center"><em>Figure 9. Example new data image with perfect performance.</em></p>
 
 Although the model works well in these cases, there are some cases were the model cannot appropriately determine a match. While the fit of the shirt may be appropriate, the colour is off.
 
-<figure style="text-align: center;"> <img src="readme_images/demo_example_bad.png" alt="Demo Example 1" width="600"> <figcaption>Figure 10. Example new data image with poor performance.</figcaption> </figure>
+<p align="center">
+	<img src="readme_images/demo_example_bad.png" alt="Demo Example 1" width="600">
+</p>
+<p align="center"><em>Figure 10. Example new data image with poor performance.</em></p>
 
 ---
 
@@ -228,6 +259,15 @@ Following these papers consumer applications of this technology began to be more
 
 ## 7.0 Discussion
 
+In this project, we developed an end-to-end fashion image retrieval system and evaluated it. The model achieved moderate performance, with a Recall@10 of 0.2665 for Item ID matching and lower results for Pair ID matching. While the system can retrieve visually similar items, it often fails to identify the exact same product, indicating limitations in fine-grained instance-level retrieval.
+
+Qualitative results show mixed performance. The model sometimes retrieves the correct item but often confuses similar products, capturing general attributes like color or clothing type while missing instance-level differences. Failures mainly arise from two issues: difficulty handling complex patterns and ambiguity in query images (e.g., occlusion or poor lighting), which make accurate retrieval challenging. In the quantitative results, the best performance among our custom approaches was achieved using fine-tuned DINOv2 embeddings with a transformer-based retrieval model, reaching a Recall@10 of 0.342. Although this is lower than directly fine-tuning DINOv2 with LoRA (Recall@10 = 0.407), it shows that our model can achieve competitive performance relative to a strong pretrained baseline.
+
+One of the most important lessons learned from this project is the significant impact of pretrained models. Initially, we experimented with custom models designed from scratch; however, these models performed extremely poorly, achieving near-zero recall. In contrast, leveraging pretrained models such as DINOv2 led to substantial improvements in performance, especially when fine-tuned for the target domain. Interestingly, we also observed that increasing model complexity does not necessarily lead to better results. For example, combining frozen DINO embeddings with additional architectures such as CNNs or Transformers through transfer learning often resulted in degraded performance. This suggests that improperly aligned feature spaces or unnecessary architectural complexity can harm retrieval quality.
+
+Another key challenge was computational cost and experiment planning. Although we expected experiments to take time, it was more difficult than anticipated to decide which ones were worth running. Since training on a large-scale dataset like DeepFashion2 is time-consuming, testing every idea was impractical, highlighting the need for strategic and selective experiment design based on clear hypotheses. We also faced challenges integrating multiple components into a unified pipeline. Combining YOLO and DINOv2 required careful coordination, and differences in implementation caused integration issues. Extending the system for real-world use further required additional data processing and feature extraction scripts, emphasizing the importance of consistent code structure and clear collaboration in large projects.
+
+If we were to approach this project again, there are several things we would have liked to know in advance. First, since simply fine-tuning pretrained models was not encouraged, we would have benefited from a better understanding of how to effectively leverage pretrained features while designing our own models on top of them. This would have helped us more quickly identify effective model designs without relying on inefficient trial-and-error. Second, better planning and prioritization of experiments would have helped us make more efficient use of limited computational resources, especially given the high cost of training on large-scale datasets. Third, we learned that integrating code across different components and team members can be more challenging than expected. Inconsistent implementations and lack of standardized structure made the integration process time-consuming, highlighting the importance of clear coding conventions and coordination from the early stages. Finally, placing greater emphasis on data quality and augmentation strategies early in the project could have improved the model’s robustness to real-world variations.
 
 
 ---
