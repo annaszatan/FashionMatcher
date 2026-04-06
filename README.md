@@ -331,12 +331,16 @@ pip install -r requirements.txt
 2. Download this [checkpoints](https://drive.google.com/drive/folders/1dOTHzSSEi7F4-OIJes1TmBAYYZm7U0xf?usp=sharing) folder and place it in the "ml" folder.
 
 #### Testing
-1. Run the following scripts from the terminal to generate the feature data and indices for the validation dataset
+1. Run the following script to download the DeepFashion2 data to your directory
+```bash
+python scripts/load_retrieval_data.py --split validation
+```
+2. Run the following scripts from the terminal to generate the feature data and indices for the validation dataset
 ```bash
 python ml/training/extract_lora_retrieval_tokens.py
 python ml/preprocessing/build_projected_faiss_index.py
 ```
-2. Run the following script from the terminal to evaluate the pipeline
+3. Run the following script from the terminal to evaluate the pipeline
 ```
 python scripts/evaluate_pipeline.py --metadata_csv ml/data/version2/validation_metadata.csv
 ```
