@@ -166,7 +166,12 @@ Overall, the qualitative results align with the quantitative performance, demons
 The following table summarizes the results from experimenting with various retrieval models.
 
 *Table 4. Retrieval Model Results*
-
+| Model                      | R@1  | R@5  | R@10 |
+|----------------------------|------|------|------|
+| ResNet18                   | 0.07 | 0.13 | 0.17 |
+| DINO Frozen                | 0.15 | 0.25 | 0.31 |
+| DINO + LoRA                | 0.21 | 0.35 | 0.41 |
+| Ours (Transformer-based)   | 0.07 | 0.24 | 0.34 |
 
 ResNet18 finds the correct items on the first try 7% of the time. Even when given 10 chances it only succeeds 17% of the time.  ResNet18 achieves the lower performance than DINO due to its limited ability to capture fine-grained visual similarities. 
 
@@ -175,6 +180,20 @@ DINO significantly improves retrieval by learning richer semantic features throu
 The consistent increase in Recall@K indicates that the model often retrieves correct items within the top results, though ranking remains imperfect due to the difficulty of our model to distinghish between very similar clothing items.
 
 We achieve the best performance by evaluating multiple training scenarios and configurations. The most relevant experiments are summarized in Figures 4–6, which present the Recall@10 results for Triplet Loss, InfoNCE Loss, and Supervised Contrastive Loss (SupCon), respectively.
+
+ajdhflkadfj
+
+
+From these graphs, we observe a consistent improvement in performance as the model transitions from a frozen baseline to more advanced fine-tuning strategies. In all three loss functions, the frozen baseline shows the lowest performance (Recall@10 ≈ 0.052), indicating that pretrained features alone are not sufficient for this task. Linear probing provides only a marginal improvement, suggesting that shallow adaptation is limited in capturing fine-grained similarities.
+ 
+A significant performance gain is achieved with partial fine-tuning, where the model begins to adapt to the dataset. However, the most notable improvement comes from applying LoRA-based fine-tuning. Across all loss functions, the LoRA configuration consistently achieves the highest Recall@10, reaching approximately 0.278 for Triplet Loss, 0.400 for InfoNCE, and 0.407 for SupCon.
+ 
+Among the evaluated loss functions, SupCon Loss achieves the best overall performance. This can be attributed to its ability to leverage multiple positive samples within a batch, leading to more discriminative and well-structured embeddings. InfoNCE also performs strongly, benefiting from its contrastive formulation, while Triplet Loss shows comparatively lower performance due to its sensitivity to sampling strategies.
+ 
+Interestingly, full fine-tuning results in a significant drop in performance across all loss functions. This suggests potential overfitting or instability when updating all model parameters, highlighting the effectiveness of parameter-efficient methods such as LoRA.
+
+Overall, these results demonstrate that both the choice of loss function and the fine-tuning strategy play a critical role in retrieval performance, with SupCon combined with LoRA providing the best results in this study.
+
 
 ### 4.3 Full Pipeline
 

@@ -1,8 +1,0 @@
-{
-  "num_queries": 4703,
-  "missing_images": 0,
-  "zero_detection_queries": 9,
-  "zero_detection_rate": 0.0019136721241760578,
-  "avg_crops_per_query": 5.348926217308101,
-  "non_empty_rate": 0.998086327875824
-}
