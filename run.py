@@ -1,3 +1,7 @@
+"""
+FashionMatcher - A Flask web application for fashion item retrieval based on user-uploaded images.
+Geneerated with AI assistance
+"""
 import base64
 import os
 import tempfile

@@ -71,6 +71,7 @@ The clothing detection component of the system contains a finetuned YOLO model t
 
 The retrieval model takes the image and creates an embedding from pretrained DINOv2 features. A transformer block will then take in the features and project them. The projected embeddings will be compared to a FAISS index of projected gallery embeddings using cosine similarity. The top k results will be returned to the user.
 
+The code for the full pipeline can be found [here](https://github.com/annaszatan/FashionMatcher/blob/main/ml/pipeline.py)
 
 ### 3.2 Localization Component
 The localization model was developed predominantly for ease of tool operability such that a user can simply upload an image and the tool can identify clothing without the need for prior cropping. As such, we focused on finetuning an existing model. Given the intended potential commercial use, it was important that our crops could be found with great speed and relative accuracy. For this reason we chose YOLO to form the backbone, then finetuned manually with different hyperparameters to achieve higher precision. 
@@ -84,7 +85,7 @@ For the retrieval model, we evaluated different feature extractors for image emb
 
 To further improve performance, we applied LoRA (Low-Rank Adaptation), a parameter-efficient fine-tuning method that adapts the attention layers of DINOv2 to the target dataset. This approach achieves the best retrieval performance while maintaining low computational cost.
 
-For a look into some of our experiments with ResNet and DINO, please see [this notebook](https://github.com/annaszatan/FashionMatcher/blob/main/ml/training/Resnet_Dino_Experiments.ipynb)
+The main code for the retrieval model can be found [here](https://github.com/annaszatan/FashionMatcher/blob/main/ml/models/retrieval_model.py)
 
 
 ---
@@ -198,6 +199,7 @@ Interestingly, full fine-tuning results in a significant drop in performance acr
 
 Overall, these results demonstrate that both the choice of loss function and the fine-tuning strategy play a critical role in retrieval performance, with SupCon combined with LoRA providing the best results in this study.
 
+For a look into some of our experiments with ResNet and DINO, please see [this notebook](https://github.com/annaszatan/FashionMatcher/blob/main/ml/training/Resnet_Dino_Experiments.ipynb)
 
 ### 4.3 Full Pipeline
 
