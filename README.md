@@ -153,6 +153,7 @@ Despite this gap, the model maintains strong performance on unseen data, indicat
 
 #### 4.2.2 Qualitative
 The figure shows that the model successfully retrieves visually similar clothing items, particularly capturing key attributes such as color (white), garment type (blouse), and structural details (ruffled sleeves and texture). The top-ranked results (Top 1–Top 3) are highly consistent with the query, indicating strong embedding quality.
+
 However, some variations appear in lower-ranked results (Top 4–Top 5), where differences in style, lighting, or pose are more noticeable. This suggests that while the model captures global appearance effectively, it may struggle with fine-grained distinctions or variations in viewpoint.
 Overall, the qualitative results align with the quantitative performance, demonstrating that the model is capable of retrieving semantically similar items, although ranking accuracy can still be improved for more challenging cases.
 
@@ -181,8 +182,10 @@ The consistent increase in Recall@K indicates that the model often retrieves cor
 
 We achieve the best performance by evaluating multiple training scenarios and configurations. The most relevant experiments are summarized in Figures 4–6, which present the Recall@10 results for Triplet Loss, InfoNCE Loss, and Supervised Contrastive Loss (SupCon), respectively.
 
-ajdhflkadfj
-
+<p align="center">
+	<img src="readme_images/localizer_crop_examples.png" alt="Localizer Boxes" width="600">
+</p>
+<p align="center"><em>Figure 5. (1) Supcon Loss, (2) InfoNCE Loss, (3) Triplet Loss.</em></p>
 
 From these graphs, we observe a consistent improvement in performance as the model transitions from a frozen baseline to more advanced fine-tuning strategies. In all three loss functions, the frozen baseline shows the lowest performance (Recall@10 ≈ 0.052), indicating that pretrained features alone are not sufficient for this task. Linear probing provides only a marginal improvement, suggesting that shallow adaptation is limited in capturing fine-grained similarities.
  
@@ -202,7 +205,7 @@ Overall, these results demonstrate that both the choice of loss function and the
 <p align="center">
 	<img src="readme_images/full_pipeline_results.png" alt="Full Pipeline Results" width="600">
 </p>
-<p align="center"><em>Figure 5. Full Pipeline Results.</em></p>
+<p align="center"><em>Figure 6. Full Pipeline Results.</em></p>
 
 To evaluate the retrieval performance, the original training dataset was split into two subsets: Gallery images (shop-side clothing images) and Query images (consumer-side images where clothing is worn). The model was trained exclusively on the Gallery set and evaluated using the Query set to simulate a realistic retrieval scenario.
 
@@ -231,7 +234,7 @@ Additionally, the steady increase in Recall as K increases suggests that relevan
 <p align="center">
 	<img src="readme_images/full_pipeline_good.png" alt="Good Pipeline Example" width="600">
 </p>
-<p align="center"><em>Figure 6. Good Example from Pipeline.</em></p>
+<p align="center"><em>Figure 7. Good Example from Pipeline.</em></p>
 
 Figure 6 presents qualitative results of the full pipeline, showing the Top-K retrieved items for success cases.
 
@@ -241,7 +244,7 @@ In the success cases, the model demonstrates a strong ability to capture distinc
 <p align="center">
 	<img src="readme_images/full_pipeline_bad.png" alt="Failure Pipeline Example" width="600">
 </p>
-<p align="center"><em>Figure 7. Failure Example from Pipeline.</em></p>
+<p align="center"><em>Figure 8. Failure Example from Pipeline.</em></p>
 
 Figure 7 presents qualitative results of the full pipeline, showing the Top-K retrieved items for failure cases. The failure cases reveal two main limitations:
 
@@ -262,21 +265,21 @@ To demonstrate the viability of this product for an everyday user, we developed 
 <p align="center">
 	<img src="readme_images/demo_example2.png" alt="Demo Example 1" width="600">
 </p>
-<p align="center"><em>Figure 8. Example new data image with good performance.</em></p>
+<p align="center"><em>Figure 9. Example new data image with good performance.</em></p>
 
 This next example is an exact match for the item from American eagle, with a very high similarity score.
 
 <p align="center">
 	<img src="readme_images/demo_example.png" alt="Demo Example 2" width="600">
 </p>
-<p align="center"><em>Figure 9. Example new data image with perfect performance.</em></p>
+<p align="center"><em>Figure 10. Example new data image with perfect performance.</em></p>
 
 Although the model works well in these cases, there are some cases were the model cannot appropriately determine a match. While the fit of the shirt may be appropriate, the colour is off.
 
 <p align="center">
 	<img src="readme_images/demo_example_bad.png" alt="Demo Example 1" width="600">
 </p>
-<p align="center"><em>Figure 10. Example new data image with poor performance.</em></p>
+<p align="center"><em>Figure 11. Example new data image with poor performance.</em></p>
 
 ---
 
