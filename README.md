@@ -167,12 +167,13 @@ Overall, the qualitative results align with the quantitative performance, demons
 The following table summarizes the results from experimenting with various retrieval models.
 
 *Table 4. Retrieval Model Results*
-| Model                      | R@1  | R@5  | R@10 |
-|----------------------------|------|------|------|
-| ResNet18                   | 0.07 | 0.13 | 0.17 |
-| DINO Frozen                | 0.15 | 0.25 | 0.31 |
-| DINO + LoRA                | 0.21 | 0.35 | 0.41 |
-| Ours (Transformer-based)   | 0.07 | 0.24 | 0.34 |
+
+| Model                    | R@1  | R@5  | R@10 |
+| ------------------------ | ---- | ---- | ---- |
+| ResNet18                 | 0.07 | 0.13 | 0.17 |
+| DINO Frozen              | 0.15 | 0.25 | 0.31 |
+| DINO + LoRA              | 0.21 | 0.35 | 0.41 |
+| Ours (Transformer-based) | 0.07 | 0.24 | 0.34 |
 
 ResNet18 finds the correct items on the first try 7% of the time. Even when given 10 chances it only succeeds 17% of the time.  ResNet18 achieves the lower performance than DINO due to its limited ability to capture fine-grained visual similarities. 
 
