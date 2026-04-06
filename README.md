@@ -86,6 +86,7 @@ To further improve performance, we applied LoRA (Low-Rank Adaptation), a paramet
 
 For a look into some of our experiments with ResNet and DINO, please see [this notebook](https://github.com/annaszatan/FashionMatcher/blob/main/ml/training/Resnet_Dino_Experiments.ipynb)
 
+
 ---
 
 ## 4.0 Results
@@ -140,7 +141,6 @@ The localization model’s effectiveness at generating appropriate bounding boxe
 ### 4.2 Retrieval Component
 This section provides an overview of the results from training and testing the retrieval portion of the FashionMatcher tool.
 
-
 #### 4.2.1 Quantitative
 The best training performance reaches a Recall@10 of approximately 0.41, while performance on unseen validation data decreases to 0.34. This indicates that for about 34% of the queries, the correct item (same pair_id) is retrieved within the top 10 results.
  
@@ -160,6 +160,21 @@ Overall, the qualitative results align with the quantitative performance, demons
 	<img src="readme_images/retrieval_model_example.png" alt="Retrieval Example" width="600">
 </p>
 <p align="center"><em>Figure 4. Example Queries and Top Results from Retrieval Model.</em></p>
+
+#### 4.2.3 Additional Experiments
+
+The following table summarizes the results from experimenting with various retrieval models.
+
+*Table 4. Retrieval Model Results*
+
+
+ResNet18 finds the correct items on the first try 7% of the time. Even when given 10 chances it only succeeds 17% of the time.  ResNet18 achieves the lower performance than DINO due to its limited ability to capture fine-grained visual similarities. 
+
+DINO significantly improves retrieval by learning richer semantic features through self-supervised training. Further improvements are obtained using LoRA (needed to handle tricky, similar looking items), which adapts the model to the dataset while keeping training efficient. 
+
+The consistent increase in Recall@K indicates that the model often retrieves correct items within the top results, though ranking remains imperfect due to the difficulty of our model to distinghish between very similar clothing items.
+
+We achieve the best performance by evaluating multiple training scenarios and configurations. The most relevant experiments are summarized in Figures 4–6, which present the Recall@10 results for Triplet Loss, InfoNCE Loss, and Supervised Contrastive Loss (SupCon), respectively.
 
 ### 4.3 Full Pipeline
 
